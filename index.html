@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chunky Password Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik+Mono+One&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Rubik Mono One', monospace;
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      color: #fff;
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 0 30px #00fff7;
+    }
+
+    h1, h2 {
+      font-size: 26px;
+      margin-bottom: 20px;
+      text-shadow: 0 0 8px #00fff7;
+    }
+
+    input, button {
+      font-family: 'Rubik Mono One', monospace;
+      padding: 15px;
+      margin: 12px 0;
+      font-size: 14px;
+      width: 100%;
+      border: none;
+      border-radius: 12px;
+    }
+
+    input {
+      background-color: #1c1c1c;
+      color: #00ffc8;
+      border: 2px solid #00ffc8;
+    }
+
+    button {
+      background: #00ffc8;
+      color: #000;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    button:hover {
+      background: #00bfa6;
+    }
+
+    .output {
+      margin-top: 25px;
+      font-size: 18px;
+      word-wrap: break-word;
+      background: #111;
+      padding: 20px;
+      border-radius: 10px;
+      border: 2px dashed #00ffc8;
+    }
+
+    .strength {
+      margin-top: 10px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .weak {
+      color: red;
+    }
+
+    .medium {
+      color: orange;
+    }
+
+    .strong {
+      color: lime;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Chunky Neon Password Generator</h1>
+
+    <input type="text" id="userName" placeholder="Enter your name" />
+    <input type="number" id="passLength" placeholder="Password length (10 - 20)" min="10" max="20" />
+    <button onclick="generateSecurePassword()">Generate Password</button>
+
+    <div class="output" id="generatedOutput"></div>
+    <div id="strengthMeter" class="strength"></div>
+  </div>
+
+  <script>
+    function generateSecurePassword() {
+      const name = document.getElementById("userName").value.trim();
+      const length = parseInt(document.getElementById("passLength").value);
+      const output = document.getElementById("generatedOutput");
+      const strength = document.getElementById("strengthMeter");
+
+      if (!name || isNaN(length) || length < 10 || length > 20) {
+        output.innerText = "Please enter a valid name and password length (10-20).";
+        strength.innerText = "";
+        return;
+      }
+
+      const baseName = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+      const symbols = "!@#$%^&*";
+      const numbers = "0123456789";
+      const randomChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" + symbols;
+      let password = baseName;
+
+      while (password.length < length) {
+        password += randomChars.charAt(Math.floor(Math.random() * randomChars.length));
+      }
+
+      password = shuffleString(password.slice(0, length));
+
+      output.innerText = "Generated Password:\n" + password;
+      showStrength(password);
+    }
+
+    function shuffleString(str) {
+      return str.split('').sort(() => 0.5 - Math.random()).join('');
+    }
+
+    function showStrength(password) {
+      const strengthMeter = document.getElementById("strengthMeter");
+      let strength = 0;
+
+      if (password.length >= 12) strength++;
+      if (/[A-Z]/.test(password)) strength++;
+      if (/[0-9]/.test(password)) strength++;
+      if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+      if (strength <= 1) {
+        strengthMeter.innerText = "Strength: Weak";
+        strengthMeter.className = "strength weak";
+      } else if (strength === 2 || strength === 3) {
+        strengthMeter.innerText = "Strength: Medium";
+        strengthMeter.className = "strength medium";
+      } else {
+        strengthMeter.innerText = "Strength: Strong";
+        strengthMeter.className = "strength strong";
+      }
+    }
+  </script>
+</body>
+</html>
